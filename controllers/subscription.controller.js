@@ -1,22 +1,47 @@
 const SubscriptionService = require('../services/subscription.service.js')
-const subscriptionService = new SubscriptionService()
+const ChatService = require('../services/chat.service')
+const subscriptionService = new SubscriptionService(new ChatService)
 
-exports.getAllSubscriptionsByRefId = async (req, res, next) => {
-  const { chatId, userId } = req.params
-  res.send(`Get subscriptions by chat id: ${chatId} or user id: ${userId}`)
+exports.getAllByRefId = async (req, res, next) => {
+  try {
+    const refIds = req.params
+    const user = req.user
+    const subscriptions = await subscriptionService.findAllByRefId(refIds, user)
+    res.status(200).json(subscriptions)
+  } catch (error) {
+    res.status(500).json(error)
+  }
 }
 
 exports.addNewSubscription = async (req, res, next) => {
-  const { chatId, userId } = req.params
-  res.send(`Add new subscription by chatId ${chatId} and userId ${userId}`)
+  try {
+    const { chatId, userId } = req.params
+    const user = req.user
+    const newSubscription = await subscriptionService.authAndCreateNew(chatId, userId, user)
+    res.status(201).json(newSubscription)
+  } catch (error) {
+    res.status(500).json(error)
+  }
 }
 
-exports.deleteSubscriptionByRefIds = async (req, res, next) => {
-  const { chatId, userId } = req.params
-  res.send(`Delete subscription by chatId ${chatId} and userId ${userId}`)
+exports.deleteByRefIds = async (req, res, next) => {
+  try {
+    const { chatId, userId } = req.params
+    const user = req.user
+    await subscriptionService.deleteByRefIds(chatId, userId, user)
+    res.sendStatus(204)
+  } catch (error) {
+    res.status(500).json(error)
+  }
 }
 
-exports.deleteSubscriptionById = async (req, res, next) => {
-  const subscriptionId = req.params.subscriptionId
-  res.send(`Delete subscription by subscription id ${subscriptionId}`)
+exports.deleteById = async (req, res, next) => {
+  try {
+    const subscriptionId = req.params.subscriptionId
+    const user = req.user
+    await subscriptionService.deleteByRefIds(subscriptionId, user)
+    res.sendStatus(204)
+  } catch (error) {
+    res.status(500).json(error)
+  }
 }
