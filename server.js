@@ -1,5 +1,4 @@
 require('dotenv').config()
-require('./config/db')
 const app = require('./config/app')
 const indexRouter = require('./routes/index')
 

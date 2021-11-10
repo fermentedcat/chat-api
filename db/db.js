@@ -1,8 +1,9 @@
 class Db {
-  constructor(collection) {
+  constructor(collection, dbConnection = require('../config/db')) {
     this.collection = collection
+    this.dbConnection = dbConnection
   }
-  async find(query = [], populate = '') {
+  async find(query, populate) {
     try {
       const docs = await this.collection.find(query).populate(populate)
       return docs
@@ -11,18 +12,18 @@ class Db {
     }
   }
 
-  async findById(id, populate = '') {
+  async findById(id, populate) {
     try {
-      const doc = await this.collection.find(id).populate(populate)
+      const doc = await this.collection.findById(id).populate(populate)
       return doc
     } catch (error) {
       throw error
     }
   }
 
-  async findOne(query = [], populate = '') {
+  async findOne(query, populate) {
     try {
-      const doc = await this.collection.find(query).populate(populate)
+      const doc = await this.collection.findOne(query).populate(populate)
       return doc
     } catch (error) {
       throw error
@@ -38,16 +39,16 @@ class Db {
     }
   }
 
-  async findByIdAndUpdate(id) {
+  async findByIdAndUpdate(id, data) {
     try {
-      const doc = await this.collection.findByIdAndUpdate(id)
+      const doc = await this.collection.findByIdAndUpdate(id, data, { new: true })
       return doc
     } catch (error) {
       throw error
     }
   }
 
-  async findOneAndUpdate(query = []) {
+  async findOneAndUpdate(query) {
     try {
       const doc = await this.collection.findOneAndUpdate(query)
       return doc
@@ -56,7 +57,7 @@ class Db {
     }
   }
 
-  async updateMany(query = []) {
+  async updateMany(query) {
     try {
       const docs = await this.collection.updateMany(query)
       return docs
@@ -67,14 +68,14 @@ class Db {
 
   async findByIdAndDelete(id) {
     try {
-      const doc = await this.collection.updateMany(id)
+      const doc = await this.collection.findByIdAndDelete(id)
       return doc
     } catch (error) {
       throw error
     }
   }
 
-  async findOneAndDelete(query = []) {
+  async findOneAndDelete(query) {
     try {
       const doc = await this.collection.findOneAndDelete(query)
       return doc
@@ -83,7 +84,7 @@ class Db {
     }
   }
 
-  async deleteMany(query = []) {
+  async deleteMany(query) {
     try {
       const docs = await this.collection.deleteMany(query)
       return docs
