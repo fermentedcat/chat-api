@@ -12,7 +12,7 @@ const subscriptionRouter = require('./subscription')
 // pass params from /api/chat/:chatId/
 router.use('/:userId/subscription', subscriptionRouter) 
 
-router.get('/', user.getAllUsers)
+router.get('/', user.getAllUsers) //TODO: admin auth
 router.get('/:userId', user.getUserById)
 router.post('/', user.addNewUser)
 router.post('/:userId', user.updateUser)

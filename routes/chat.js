@@ -13,7 +13,7 @@ router.use('/:chatId/message', messageRouter)
 router.use('/:chatId/user', userRouter)
 router.use('/:chatId/subscription', subscriptionRouter)
 
-router.get('/', chat.getAllChats)
+router.get('/', chat.getAllChats) //TODO: auth admin
 router.get('/:chatId', chat.getChatById)
 router.post('/', chat.addNewChat)
 router.post('/:chatId', chat.updateChat)

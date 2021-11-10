@@ -19,9 +19,9 @@ DELETE /:subscriptionId
 /api/subscription
 */
 
-router.get('/', subscription.getAllSubscriptionsByRefId) // by userId OR chatId
+router.get('/', subscription.getAllByRefId) // by userId OR chatId
 router.post('/', subscription.addNewSubscription) // by userId AND chatId
-router.delete('/', subscription.deleteSubscriptionByRefIds)  // by userId AND chatId
-router.delete('/:subscriptionId', subscription.deleteSubscriptionById)
+router.delete('/', subscription.deleteByRefIds)  // by userId AND chatId
+router.delete('/:subscriptionId', subscription.deleteById)
 
 module.exports = router
