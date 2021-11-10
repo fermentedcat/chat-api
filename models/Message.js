@@ -7,13 +7,11 @@ const messageSchema = new Schema({
     ref: 'Chat', 
     required: true
   },
-  content: {
-    text: {
-      type: String,
-    },
-    image: {
-      type: String
-    }
+  text: {
+    type: String,
+  },
+  photo: {
+    type: String,
   },
   author: {
     type: Schema.Types.ObjectId, 

@@ -14,10 +14,6 @@ const chatSchema = new Schema({
   description: {
     type: String
   },
-  subscribers: [{
-    type: Schema.Types.ObjectId, 
-    ref: 'User'
-  }],
   private: {
     type: Boolean,
     default: false
