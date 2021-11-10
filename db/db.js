@@ -1,7 +1,6 @@
 class Db {
-  constructor(collection, dbConnection = require('../config/db')) {
+  constructor(collection) {
     this.collection = collection
-    this.dbConnection = dbConnection
   }
   async find(query, populate) {
     try {
