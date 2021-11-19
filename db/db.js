@@ -29,9 +29,12 @@ class Db {
     }
   }
 
-  async create(data) {
+  async create(data, populate) {
     try {
       const doc = await new this.collection(data).save()
+      if (populate) {
+        await doc.populate(populate)
+      }
       return doc
     } catch (error) {
       throw error
