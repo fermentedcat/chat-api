@@ -1,8 +1,11 @@
 const express = require('express')
-const message = require('../controllers/message.controller')
 const router = express.Router({
   mergeParams: true
 });
+
+const userAuth = require('../middlewares/userAuth')
+
+const message = require('../controllers/message.controller')
 
 /* 
 /api/chat/:chatId/message
@@ -15,10 +18,10 @@ const router = express.Router({
 - DELETE delete message
 */
 
-router.get('/', message.getAllByChatId) // /api/chat/:chatId/message
-router.get('/:messageId', message.getMessageById)
-router.post('/', message.addNewMessage) // /api/chat/:chatId/message
-router.post('/:messageId', message.updateMessage)
-router.delete('/:messageId', message.deleteMessage)
+router.get('/', userAuth, message.getAllByChatId) // /api/chat/:chatId/message
+router.get('/:messageId', userAuth, message.getMessageById)
+router.post('/', userAuth, message.addNewMessage) // /api/chat/:chatId/message
+router.post('/:messageId', userAuth, message.updateMessage)
+router.delete('/:messageId', userAuth, message.deleteMessage)
 
 module.exports = router

@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router({
   mergeParams: true
 })
+const userAuth = require('../middlewares/userAuth')
+
 const subscription = require('../controllers/subscription.controller')
 
 /* 
@@ -19,9 +21,9 @@ DELETE /:subscriptionId
 /api/subscription
 */
 
-router.get('/', subscription.getAllByRefId) // by userId OR chatId
-router.post('/', subscription.addNewSubscription) // by userId AND chatId
-router.delete('/', subscription.deleteByRefIds)  // by userId AND chatId
-router.delete('/:subscriptionId', subscription.deleteById)
+router.get('/', userAuth, subscription.getAllByRefId) // by userId OR chatId
+router.post('/', userAuth, subscription.addNewSubscription) // by userId AND chatId
+router.delete('/', userAuth, subscription.deleteByRefIds)  // by userId AND chatId
+router.delete('/:subscriptionId', userAuth, subscription.deleteById)
 
 module.exports = router
