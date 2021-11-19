@@ -12,7 +12,7 @@ class SubscriptionService {
       // can be used with params chatId, userId or no params (req.user)
       const { chatId, userId } = refIds
       const refId = chatId || userId || user.userId
-      const query = { $or: [{ chatId: refId }, { userId: refId }] }
+      const query = { $or: [{ chat: refId }, { user: refId }] }
       const populate = 'chat'
 
       const subscriptions = await this.db.find(query, populate)
