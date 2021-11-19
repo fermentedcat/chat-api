@@ -66,7 +66,8 @@ class MessageService {
       if (messageData.photo) {
         data.photo = messageData.text
       }
-      const message = await this.db.create(data)
+      const populate = 'author'
+      const message = await this.db.create(data, populate)
       return message
     } catch (error) {
       throw error
