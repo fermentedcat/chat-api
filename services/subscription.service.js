@@ -65,31 +65,27 @@ class SubscriptionService {
     try {
       const isSelf = user.userId === userId
       const isAdmin = user.role === 'admin'
-      let isAuthorized = !isSelf && isAdmin
 
       if (!isSelf && !isAdmin) {
         // req user is someone else and is not admin
         // check user is subscriber
         const query = { $and: [{ chat: chatId }, { user: user.userId }] }
-        const subscription = await this.db.findOne(query)
-        if (subscription) {
-          isAuthorized = true
+        const isSubscriber = await this.db.findOne(query)
+        if (!isSubscriber) {
+          throw new Error('Not authorized.')
         }
       } else {
         // req user is the new subscriber
-        const query = { $and: [{ chat: chatId }, { user: userId }] }
-        const isAlreadySubscriber = await this.db.findOne(query)
-        if (isAlreadySubscriber) {
-          throw new Error('Subscription already exists.')
-        }
         const chat = await this.chatService.findById(chatId)
-        if (!chat.private) {
-          isAuthorized = true
+        if (chat.private) {
+          throw new Error('Not authorized.')
         }
       }
-
-      if (!isAuthorized) {
-        throw new Error('Not authorized.')
+      const query = { $and: [{ chat: chatId }, { user: userId }] }
+      const isAlreadySubscriber = await this.db.findOne(query)
+      
+      if (isAlreadySubscriber) {
+        throw new Error('Subscription already exists.')
       }
 
       const subscription = await this.createNew(chatId, userId)
