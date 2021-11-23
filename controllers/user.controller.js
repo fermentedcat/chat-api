@@ -34,6 +34,16 @@ exports.searchUser = async (req, res, next) => {
   }
 }
 
+exports.searchUsers = async (req, res, next) => {
+  try {
+    const string = req.params.string
+    const user = await userService.findAllByString(string)
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+}
+
 exports.getUserById = async (req, res, next) => {
   try {
     const userId = req.params.userId

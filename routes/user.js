@@ -19,6 +19,7 @@ router.use('/:userId/subscription', subscriptionRouter)
 router.get('/auth', userAuth, user.authenticate)
 router.get('/', user.getAllUsers) //TODO: admin auth
 router.get('/search/:username', user.searchUser)
+router.get('/search-all/:string', user.searchUsers)
 router.get('/:userId', userAuth, user.getUserById)
 router.post('/login', user.login)
 router.post('/', user.addNewUser)

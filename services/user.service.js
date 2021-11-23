@@ -27,6 +27,22 @@ class UserService {
     }
   }
 
+  async findAllByString(string) {
+    try {
+      const query = {
+        $or: [
+          { username: { $regex: string, $options: 'i' } },
+          { fullName: { $regex: string, $options: 'i' } },
+          { email: { $regex: string, $options: 'i' } },
+        ],
+      }
+      const users = await this.db.find(query)
+      return users
+    } catch (error) {
+      throw error
+    }
+  }
+
   async findByUsername(username) {
     try {
       const query = { username: username }
@@ -41,7 +57,7 @@ class UserService {
     try {
       const { email, password } = userData
 
-      const query = { email: email }
+      const query = { email: { $regex: email, $options: 'i' } }
       const user = await this.db.findOne(query)
 
       const hash = user.password
@@ -58,6 +74,7 @@ class UserService {
     try {
       const hashedData = {
         ...userData,
+        email: userData.email.toLowerCase(),
         password: await password.hash(userData.password),
       }
       const user = await this.db.create(hashedData)
