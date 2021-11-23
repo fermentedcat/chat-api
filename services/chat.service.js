@@ -46,8 +46,9 @@ class ChatService {
       const data = {
         creator: userId,
         title: chatData.title,
-        private: chatData.private
+        private: chatData.private,
       }
+      
       const chat = await this.db.create(data)
       await this.subscriptionService.createNew(chat._id, userId)
       return chat
