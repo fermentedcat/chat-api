@@ -91,8 +91,8 @@ class MessageService {
       if (!isAuthorized) {
         throw new Error('Not authorized.')
       }
-
-      const updated = await this.db.findByIdAndUpdate(messageId, data)
+      const populate = 'author'
+      const updated = await this.db.findByIdAndUpdate(messageId, data, populate)
       return updated
     } catch (error) {
       throw error

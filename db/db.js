@@ -41,9 +41,9 @@ class Db {
     }
   }
 
-  async findByIdAndUpdate(id, data) {
+  async findByIdAndUpdate(id, data, populate) {
     try {
-      const doc = await this.collection.findByIdAndUpdate(id, data, { new: true })
+      const doc = await this.collection.findByIdAndUpdate(id, data, { new: true }).populate(populate)
       return doc
     } catch (error) {
       throw error
