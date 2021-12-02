@@ -76,6 +76,18 @@ exports.updateUser = async (req, res, next) => {
   }
 }
 
+exports.setPushToken = async (req, res, next) => {
+  try {
+    const user = req.user
+    const token = req.body.token
+    console.log('pushToken', user, token)
+    const updatedUser = await userService.setPushToken(user, token)
+    res.status(200).json(updatedUser)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+}
+
 exports.deleteUser = async (req, res, next) => {
   try {
     const user = req.user

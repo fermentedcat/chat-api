@@ -26,6 +26,9 @@ const userSchema = new Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  pushToken: {
+    type: String,
+  }
 }, {
   timestamps: true,
 });

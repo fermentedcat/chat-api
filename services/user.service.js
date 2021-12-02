@@ -85,6 +85,18 @@ class UserService {
     }
   }
 
+  async setPushToken(user, token) {
+    try {
+      const data = { 
+        pushToken: token
+      }
+      const updated = await this.db.findByIdAndUpdate(user.userId, data)
+      return updated
+    } catch (error) {
+      throw error
+    }
+  }
+
   async update(user, userId, userData) {
     try {
       const isAuthorized = user.userId === userId || user.role === 'admin'
