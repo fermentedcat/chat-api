@@ -1,11 +1,13 @@
 const Db = require('../db/db')
 const Message = require('../models/Message')
 const SubscriptionService = require('./subscription.service')
+const PushService = require('./push.service')
 
 class MessageService {
   constructor() {
     this.db = new Db(Message)
     this.subscriptionService = new SubscriptionService()
+    this.pushService = new PushService()
   }
   async findAllByChatId(chatId, user) {
     try {
@@ -16,7 +18,6 @@ class MessageService {
       if (!isAuthorized) {
         throw new Error('Not authorized.')
       }
-      
       const populate = 'author'
       const query = { chat: chatId }
       const messages = await this.db.find(query, populate)
@@ -68,6 +69,9 @@ class MessageService {
       }
       const populate = 'author'
       const message = await this.db.create(data, populate)
+      const pushTokens = await this.subscriptionService.findPushTokensByChatId(chatId)
+      this.pushService.pushNewMessage(pushTokens, message)
+      console.log(pushTokens)
       return message
     } catch (error) {
       throw error

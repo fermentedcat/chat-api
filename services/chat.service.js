@@ -61,8 +61,9 @@ class ChatService {
     try {
       const { userId, role } = user
       const chat = await this.db.findById(chatId)
+      const subscription = await this.subscriptionService.findOneByRefIds(chatId, userId)
 
-      if (role !== 'admin' && userId != chat.creator) {
+      if (role !== 'admin' && userId != chat.creator && !subscription) {
         throw new Error('Not authorized')
       }
 

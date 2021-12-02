@@ -38,6 +38,22 @@ class SubscriptionService {
     }
   }
 
+  async findPushTokensByChatId(chatId) {
+    try {
+      const query = { chat: chatId }
+      const populate = 'user'
+      const subscriptions = await this.db.find(query, populate)
+      const tokens = subscriptions.map((doc) => {
+        if (!doc.user.pushToken) return
+        return doc.user.pushToken
+      })
+      console.log(tokens)
+      return tokens
+    } catch (error) {
+      throw error
+    }
+  }
+
   async findOneByRefIds(chatId, userId) {
     try {
       const query = { $and: [{ chat: chatId }, { user: userId }] }
