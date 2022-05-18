@@ -19,8 +19,10 @@ class PushService {
         sound: 'default',
         title: message.author.username,
         body: message.text,
-        data: { withSome: 'data' },
-        badge: 1,
+        data: { 
+          chatId: message.chat._id,
+          chatName: message.chat.title
+        },
       })
     }
     const tickets = await this.getTickets(messages)
