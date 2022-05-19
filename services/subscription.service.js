@@ -38,17 +38,13 @@ class SubscriptionService {
     }
   }
 
-  async findPushTokensByChatId(chatId) {
+  // find other chat subscribers than this user
+  async findOtherSubscriptions(chatId, userId) {
     try {
-      const query = { chat: chatId }
+      const query = { chat: chatId, user: { $ne: userId } }
       const populate = 'user'
       const subscriptions = await this.db.find(query, populate)
-      const tokens = subscriptions.map((doc) => {
-        if (!doc.user.pushToken) return
-        return doc.user.pushToken
-      })
-      console.log(tokens)
-      return tokens
+      return subscriptions
     } catch (error) {
       throw error
     }
@@ -99,7 +95,7 @@ class SubscriptionService {
       }
       const query = { $and: [{ chat: chatId }, { user: userId }] }
       const isAlreadySubscriber = await this.db.findOne(query)
-      
+
       if (isAlreadySubscriber) {
         throw new Error('Subscription already exists.')
       }

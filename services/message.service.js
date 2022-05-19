@@ -2,6 +2,7 @@ const Db = require('../db/db')
 const Message = require('../models/Message')
 const SubscriptionService = require('./subscription.service')
 const PushService = require('./push.service')
+const sse = require('../controllers/sse.controller')
 
 class MessageService {
   constructor() {
@@ -12,7 +13,10 @@ class MessageService {
   async findAllByChatId(chatId, user) {
     try {
       const { userId, role } = user
-      const subscription = await this.subscriptionService.findOneByRefIds(chatId, userId)
+      const subscription = await this.subscriptionService.findOneByRefIds(
+        chatId,
+        userId
+      )
       const isAuthorized = subscription || role === 'admin'
 
       if (!isAuthorized) {
@@ -32,11 +36,18 @@ class MessageService {
     try {
       const populate = 'author chat'
       const message = await this.db.findById(messageId, populate)
-      
+
       const chatId = message.chat._id
       const { userId, role } = user
-      const subscription = await this.subscriptionService.findOneByRefIds(chatId, userId)
-      const isAuthorized = subscription || role === 'admin' || userId == message.author._id || userId == message.chat.creator
+      const subscription = await this.subscriptionService.findOneByRefIds(
+        chatId,
+        userId
+      )
+      const isAuthorized =
+        subscription ||
+        role === 'admin' ||
+        userId == message.author._id ||
+        userId == message.chat.creator
 
       if (!isAuthorized) {
         throw new Error('Not authorized.')
@@ -51,8 +62,11 @@ class MessageService {
   async createNew(chatId, user, messageData) {
     try {
       const { userId } = user
-      
-      const subscription = await this.subscriptionService.findOneByRefIds(chatId, userId)
+
+      const subscription = await this.subscriptionService.findOneByRefIds(
+        chatId,
+        userId
+      )
       if (!subscription) {
         throw new Error('Not authorized.')
       }
@@ -67,11 +81,29 @@ class MessageService {
       if (messageData.photo) {
         data.photo = messageData.text
       }
-      const populate = 'author'
+      const populate = 'author chat'
       const message = await this.db.create(data, populate)
-      const pushTokens = await this.subscriptionService.findPushTokensByChatId(chatId)
+
+      // send new message to other users in room
+      const liveUpdateRecipients = sse.send(chatId, userId, message)
+
+      const subscriptions = await this.subscriptionService.findOtherSubscriptions(
+        chatId,
+        userId
+      )
+
+      // find subscribers with push tokens that are not in the chat room
+      const pushTokens = subscriptions.reduce((filtered, doc) => {
+        const hasRecievedUpdate = liveUpdateRecipients.findIndex((user) => doc.user.id === user.id) !== -1
+        const isAuthor = doc.user._id === userId
+        if (!hasRecievedUpdate && !isAuthor && doc.user.pushToken) {
+          filtered.push(doc.user.pushToken)
+        }
+        return filtered
+      }, [])
+
       this.pushService.pushNewMessage(pushTokens, message)
-      console.log(pushTokens)
+
       return message
     } catch (error) {
       throw error
@@ -109,8 +141,11 @@ class MessageService {
       const message = await this.db.findById(messageId, populate)
 
       const { userId, role } = user
-      const isAuthorized = role === 'admin' || userId == message.author || userId == message.chat.creator
-      
+      const isAuthorized =
+        role === 'admin' ||
+        userId == message.author ||
+        userId == message.chat.creator
+
       if (!isAuthorized) {
         throw new Error('Not authorized.')
       }
