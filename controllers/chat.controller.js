@@ -2,7 +2,6 @@ const ChatService = require('../services/chat.service.js')
 const chatService = new ChatService()
 
 exports.getAllChats = async (req, res, next) => {
-  // admin only
   try {
     const response = await chatService.findAll()
     res.status(200).json(response)

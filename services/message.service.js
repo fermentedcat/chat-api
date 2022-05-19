@@ -95,8 +95,7 @@ class MessageService {
       // find subscribers with push tokens that are not in the chat room
       const pushTokens = subscriptions.reduce((filtered, doc) => {
         const hasRecievedUpdate = liveUpdateRecipients.findIndex((user) => doc.user.id === user.id) !== -1
-        const isAuthor = doc.user._id === userId
-        if (!hasRecievedUpdate && !isAuthor && doc.user.pushToken) {
+        if (!hasRecievedUpdate && doc.user.pushToken) {
           filtered.push(doc.user.pushToken)
         }
         return filtered

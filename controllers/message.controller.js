@@ -19,7 +19,6 @@ exports.getMessageById = async (req, res, next) => {
     const message = await messageService.findById(messageId, user)
     res.status(200).json(message)
   } catch (error) {
-    console.log(error)
     res.status(500).json(error)
   }
 }
