@@ -23,7 +23,7 @@ exports.register = (req, res, next) => {
     clients.push(newClient)
     
     // Heartbeat to avoid request timeout first time (30 sec)
-    // res.write(`:\n\n`)
+    res.write(`:\n\n`)
     res.write(`retry: 1000\n`)
     console.log(`*** New registration. userId: "${userId}"`)
 
