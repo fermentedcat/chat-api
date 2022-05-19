@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const userAuth = require('../middlewares/userAuth')
+const adminAuth = require('../middlewares/adminAuth')
 
 const chat = require('../controllers/chat.controller')
 
@@ -17,7 +18,7 @@ router.use('/:chatId/message', messageRouter)
 router.use('/:chatId/user', userRouter)
 router.use('/:chatId/subscription', subscriptionRouter)
 
-router.get('/', chat.getAllChats) //TODO: auth admin
+router.get('/', adminAuth, chat.getAllChats)
 router.get('/:chatId', userAuth, chat.getChatById)
 router.post('/', userAuth, chat.addNewChat)
 router.post('/:chatId', userAuth, chat.updateChat)

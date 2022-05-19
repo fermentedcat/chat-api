@@ -4,6 +4,7 @@ const router = express.Router({
 })
 
 const userAuth = require('../middlewares/userAuth')
+const adminAuth = require('../middlewares/adminAuth')
 
 const user = require('../controllers/user.controller')
 
@@ -17,7 +18,7 @@ const subscriptionRouter = require('./subscription')
 router.use('/:userId/subscription', subscriptionRouter) 
 
 router.get('/auth', userAuth, user.authenticate)
-router.get('/', user.getAllUsers) //TODO: admin auth
+router.get('/', adminAuth, user.getAllUsers)
 router.get('/search/:username', user.searchUser)
 router.get('/search-all/:string', user.searchUsers)
 router.get('/:userId', userAuth, user.getUserById)
