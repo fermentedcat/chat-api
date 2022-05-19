@@ -1,5 +1,5 @@
 const SSE_RESPONSE_HEADERS = {
-  'Connection': 'keep-alive',
+  Connection: 'keep-alive',
   'Content-Type': 'text/event-stream',
   'Cache-Control': 'no-cache',
   'X-Accel-Buffering': 'no',
