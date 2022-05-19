@@ -1,6 +1,7 @@
 const SubscriptionService = require('../services/subscription.service.js')
 const ChatService = require('../services/chat.service')
-const subscriptionService = new SubscriptionService(new ChatService)
+const subscriptionService = new SubscriptionService()
+const chatService = new ChatService()
 
 exports.getAllByRefId = async (req, res, next) => {
   try {
@@ -17,7 +18,8 @@ exports.addNewSubscription = async (req, res, next) => {
   try {
     const { chatId, userId } = req.params
     const user = req.user
-    const newSubscription = await subscriptionService.authAndCreateNew(chatId, userId, user)
+    const isPrivateChat = await chatService.checkIsPrivate(chatId)
+    const newSubscription = await subscriptionService.authAndCreateNew(chatId, userId, user, isPrivateChat)
     res.status(201).json(newSubscription)
   } catch (error) {
     res.status(500).json(error)

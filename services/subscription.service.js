@@ -2,9 +2,8 @@ const Db = require('../db/db')
 const Subscription = require('../models/Subscription')
 
 class SubscriptionService {
-  constructor(chatService) {
+  constructor() {
     this.db = new Db(Subscription)
-    this.chatService = chatService
   }
 
   async findAllByRefId(refIds, user) {
@@ -73,7 +72,7 @@ class SubscriptionService {
     }
   }
 
-  async authAndCreateNew(chatId, userId, user) {
+  async authAndCreateNew(chatId, userId, user, isPrivateChat) {
     try {
       const isSelf = user.userId === userId
       const isAdmin = user.role === 'admin'
@@ -86,13 +85,12 @@ class SubscriptionService {
         if (!isSubscriber) {
           throw new Error('Not authorized.')
         }
-      } else {
-        // req user is the new subscriber
-        const chat = await this.chatService.findById(chatId)
-        if (chat.private) {
-          throw new Error('Not authorized.')
-        }
+      } 
+      // If is user adding themself to private chat
+      if (isSelf && isPrivateChat) {
+        throw new Error('Not authorized.')
       }
+
       const query = { $and: [{ chat: chatId }, { user: userId }] }
       const isAlreadySubscriber = await this.db.findOne(query)
 

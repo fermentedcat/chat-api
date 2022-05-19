@@ -7,7 +7,7 @@ class ChatService {
   constructor() {
     this.db = new Db(Chat)
     this.messageService = new MessageService()
-    this.subscriptionService = new SubscriptionService(this)
+    this.subscriptionService = new SubscriptionService()
   }
   async findAll() {
     try {
@@ -35,6 +35,15 @@ class ChatService {
     try {
       const chat = await this.db.findById(chatId, 'creator')
       return chat
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async checkIsPrivate(chatId) {
+    try {
+      const chat = await this.db.findById(chatId)
+      return chat.private
     } catch (error) {
       throw error
     }
