@@ -1,11 +1,12 @@
 require('dotenv').config()
 const { mongoose, connect } = require('../config/__test__.db')
 const UserService = require('../services/user.service')
+const token = require('../utils/token')
 const userService = new UserService()
 
 describe('Testing userService', () => {
-  beforeAll(async () => {
-    await connect()
+  beforeAll(() => {
+    connect()
   })
   
   afterAll(async () => {
@@ -14,20 +15,21 @@ describe('Testing userService', () => {
   })
 
   let newUser
-
-  test('createNew returns new user', async () => {
+  test('createNew returns token with new user', async () => {
     const userData = {
       fullName: 'Jane Doe',
       username: 'jenny',
       email: 'jenny@example.com',
       password: 'secr3tPassw0rd'
     }
-    newUser = await userService.createNew(userData)
-    expect(newUser.fullName).toBe('Jane Doe')
+    userToken = await userService.createNew(userData)
+    const newUser = token.decode(userToken)
+    expect(newUser.username).toBe('jenny')
   })
 
   test('findAll returns array with user', async () => {
     const users = await userService.findAll()
+    newUser = users[0]
     expect(users[0].username).toBe('jenny')
   })
 
@@ -56,20 +58,16 @@ describe('Testing userService', () => {
       email: 'bob@ross.com',
       password: 'secr3tPassw0rd'
     }
-    const anotherUser = await userService.createNew(anotherUserData)
-    expect(anotherUser.email).toBe('bob@ross.com')
-
-    const reqUser = {
-      userId: anotherUser._id,
-      role: anotherUser.role
-    }
+    const anotherUserToken = await userService.createNew(anotherUserData)
+    const anotherUser = token.decode(anotherUserToken)
+    expect(anotherUser.username).toBe('bobby')
 
     const updateData = {
       username: 'bobbo'
     }
     let errorMessage
     try {
-      await userService.update(reqUser, newUser._id, updateData)
+      await userService.update(anotherUser, newUser._id, updateData)
     } catch (err) {
       errorMessage = err.message
     }
