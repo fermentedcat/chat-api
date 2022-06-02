@@ -16,7 +16,7 @@ exports.hash = async (password) => {
 
 exports.match = async (password, hash) => {
   try {
-    return await bcrypt.match(password, hash)
+    return await bcrypt.compare(password, hash)
   } catch (error) {
     throw error
   }

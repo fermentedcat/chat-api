@@ -1,6 +1,6 @@
 const Db = require('../db/db')
 const User = require('../models/User')
-const password = require('../utils/password')
+const passwordUtils = require('../utils/password')
 const { create: createToken } = require('../utils/token')
 const SubscriptionService = require('./subscription.service')
 
@@ -58,11 +58,15 @@ class UserService {
       const { email, password } = userData
 
       const query = { email: { $regex: email, $options: 'i' } }
-      const user = await this.db.findOne(query)
+      const select = '+password'
+      const user = await this.db.findOne(query, [], select)
 
       const hash = user.password
-      await password.match(password, hash)
-
+      const isMatch = await passwordUtils.match(password, hash)
+      if (!isMatch) {
+        throw new Error('Not authorized')
+      }
+      
       const token = createToken(user)
       return token
     } catch (error) {
@@ -75,7 +79,7 @@ class UserService {
       const hashedData = {
         ...userData,
         email: userData.email.toLowerCase(),
-        password: await password.hash(userData.password),
+        password: await passwordUtils.hash(userData.password),
       }
       const user = await this.db.create(hashedData)
       const token = createToken(user)
