@@ -20,9 +20,9 @@ class Db {
     }
   }
 
-  async findOne(query, populate) {
+  async findOne(query, populate, select) {
     try {
-      const doc = await this.collection.findOne(query).populate(populate)
+      const doc = await this.collection.findOne(query).populate(populate).select(select)
       return doc
     } catch (error) {
       throw error
